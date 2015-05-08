@@ -1,0 +1,2 @@
+# loresim
+Long read simulation

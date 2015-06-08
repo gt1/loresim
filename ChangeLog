@@ -1,3 +1,9 @@
+loresim (0.0.1-1) unstable; urgency=medium
+
+  * add documentation 
+
+ -- German Tischler <gt1@sanger.ac.uk>  Mon, 08 Jun 2015 16:11:56 +0200
+
 loresim (0.0.0-1) UNRELEASED; urgency=medium
 
   * Initial release

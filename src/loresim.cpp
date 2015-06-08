@@ -282,7 +282,7 @@ int main(int argc, char ** argv)
                     }
                 }
                 
-                std::cout << '>' << 'L' << runid << '/' << (readid++) << '/' << 0 << '_' << baseostr.str().size() << " RQ=0.85 " << errostr.str() << '\n';
+                std::cout << '>' << 'L' << runid << '/' << (readid++) << '/' << 0 << '_' << baseostr.str().size() << " RQ=0.851 " << errostr.str() << '\n';
 
                 uint64_t b_low = 0;
                 std::string const bases = baseostr.str();

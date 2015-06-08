@@ -10,6 +10,16 @@ if [ ! -f src/loresim ] ; then
 fi
 
 IN=$1
+
+if [ ! -f $IN ] ; then
+	if [ ! -f src/genseq ] ; then
+		echo "Program src/genseq does not exist. Please compile it first."
+		exit 1
+	fi
+	
+	src/genseq repfrag=0.1 numblocks=64k > $IN
+fi
+
 OUT=$2
 TRAVERSALS=$3
 
@@ -31,7 +41,7 @@ if [ -f ../DAZZ_DB/fasta2DB ] ; then
 		../DALIGNER/HPCdaligner ${OUTSHORT%.fasta}.db | PATH=$PATH:../DALIGNER bash
 		
 		if [ -f ../../celamy2/LAcelamy ] ; then
-			../../celamy2/LAcelamy ${OUTSHORT%.fasta}.db ${OUTSHORT%.fasta}.db out_short_names.1.las
+			../../celamy2/LAcelamy ${OUTSHORT%.fasta}.db ${OUTSHORT%.fasta}.db ${OUTSHORT%.fasta}.1.las
 		fi
 	fi
 fi

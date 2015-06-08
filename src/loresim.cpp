@@ -77,6 +77,14 @@ int main(int argc, char ** argv)
         double const keeplowstate = arginfo.getValue<double>("keeplowstate", 0.9998);
         double const keephighstate = arginfo.getValue<double>("keeplowstate", 0.995);
         double const startlowprob = arginfo.getValue<double>("startlowprob", 0.7);
+
+        std::map<int,double> state_erate;
+        std::map<int,double> state_erate_sq;
+       
+        state_erate[state_error_low] = arginfo.getValue<double>("eratelow", 0.15);
+        state_erate[state_error_high] = arginfo.getValue<double>("eratehigh",0.25);
+        state_erate_sq[state_error_low] = arginfo.getValue<double>("eratelowstddev", 0.03);
+        state_erate_sq[state_error_high] = arginfo.getValue<double>("eratehighstddev", 0.04);
     
         libmaus2::fastx::StreamFastAReaderWrapper SFAR(std::cin);
         libmaus2::fastx::StreamFastAReaderWrapper::pattern_type pattern;
@@ -97,13 +105,6 @@ int main(int argc, char ** argv)
         state_start_map[state_error_low] = startlowprob;
         state_start_map[state_error_high] = 1 - state_start_map[state_error_low];
         
-        std::map<int,double> state_erate;
-        std::map<int,double> state_erate_sq;
-       
-        state_erate[state_error_low] = arginfo.getValue<double>("eratelow", 0.15);
-        state_erate[state_error_high] = arginfo.getValue<double>("eratehigh",0.25);
-        state_erate_sq[state_error_low] = arginfo.getValue<double>("eratelowstddev", 0.03);
-        state_erate_sq[state_error_high] = arginfo.getValue<double>("eratehighstddev", 0.04);
         uint64_t runid = 0;
         uint64_t readid = 0;
 

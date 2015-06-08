@@ -54,6 +54,12 @@ int main(int argc, char * argv[])
 		double repfrag = arginfo.getValue<double>("repfrag",0.01);	
 		double reprepfrag = arginfo.getValue<double>("reprepfrag",0.5);
 		uint64_t const numblocks = arginfo.getValueUnsignedNumeric<uint64_t>("numblocks",1024);
+		double const eratesq = arginfo.getValue<double>("eratesq",0.001);
+		double const erateavg = arginfo.getValue<double>("erateavg",0.001);
+		double substrate = arginfo.getValue<double>("substrate",.2);
+		double delrate = arginfo.getValue<double>("delrate",.3);
+		double insrate = arginfo.getValue<double>("insrate",.5);
+		
 		std::vector<uint64_t> blockids;
 		std::vector<std::string> blocks;
 		std::set<uint64_t> repblockset;
@@ -94,6 +100,8 @@ int main(int argc, char * argv[])
 				std::vector<char> V(length);
 				for ( uint64_t j = 0; j < V.size(); ++j )
 					V[j] = libmaus2::fastx::remapChar(libmaus2::random::Random::rand8()%4);
+					
+				std::cerr << "[D] new block of size " << V.size() << std::endl;
 				
 				blockids.push_back(blocks.size());
 				blocks.push_back(std::string(V.begin(),V.end()));
@@ -102,9 +110,9 @@ int main(int argc, char * argv[])
 		
 		std::cerr << "[D] all blocks generated" << std::endl;
 		
-		std::cout << ">seq\n";
 		for ( uint64_t i = 0; i < blockids.size(); ++i )
 		{
+			
 			std::string sub = blocks[blockids[i]];
 			
 			std::map<uint64_t,std::vector<err_type_enum> > errM;
@@ -112,9 +120,6 @@ int main(int argc, char * argv[])
 			    errM[i] = std::vector<err_type_enum>(0);
 
 			std::map<int,double> err_prob_cumul;
-			double substrate = arginfo.getValue<double>("substrate",.2);
-			double delrate = arginfo.getValue<double>("delrate",.3);
-			double insrate = arginfo.getValue<double>("insrate",.5);
 			double ratesum = substrate + delrate + insrate;
 			substrate /= ratesum;
 			delrate /= ratesum;
@@ -125,16 +130,12 @@ int main(int argc, char * argv[])
 			err_prob_cumul[err_ins] = substrate + delrate + insrate;
 
 			double erate = -1;
-			double const erate_sq = 0.001;
-			double const erate_avg = 0.001;
-			while ( (erate = libmaus2::random::GaussianRandom::random(erate_sq,erate_avg)) < 0 )
+			while ( (erate = libmaus2::random::GaussianRandom::random(eratesq,erateavg)) < 0 )
 			{    
 			}
 			    
 			uint64_t const numerr = std::floor(erate * sub.size() + 0.5);
-							
-			// errostr << "einterval(" << "[" << low << "," << high << ")" << ",erate=" << erate << ",numerr=" << numerr << ')' << ';';
-			    
+
 			uint64_t errplaced = 0;
 			    
 			while ( errplaced < numerr )
@@ -235,9 +236,9 @@ int main(int argc, char * argv[])
 					}
 			}
 			    
-			std::cout << baseostr.str();	
+			std::cout << ">seq_" << blockids[i] << "_" << baseostr.str().size() << "\n";
+			std::cout << baseostr.str() << "\n";	
 		}
-		std::cout << std::endl;
 	}
 	catch(std::exception const & ex)
 	{

@@ -33,3 +33,9 @@ lic
 src/fastareformat
 src/genseq
 src/loresim
+*.fasta
+*.bps
+*.idx
+*.las
+*.db
+trim.cam

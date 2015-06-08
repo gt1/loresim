@@ -39,6 +39,9 @@ if [ -f ../DAZZ_DB/fasta2DB ] ; then
 	if [ -f ../DALIGNER/HPCdaligner ] ; then
 		rm -f ${OUTSHORT%.fasta}*.las
 		../DALIGNER/HPCdaligner ${OUTSHORT%.fasta}.db | PATH=$PATH:../DALIGNER bash
+
+		rm -f ${OUTSHORT%.fasta}.${OUTSHORT%.fasta}.C*.las
+		rm -f ${OUTSHORT%.fasta}.${OUTSHORT%.fasta}.N*.las
 		
 		if [ -f ../../celamy2/LAcelamy ] ; then
 			../../celamy2/LAcelamy ${OUTSHORT%.fasta}.db ${OUTSHORT%.fasta}.db ${OUTSHORT%.fasta}.1.las

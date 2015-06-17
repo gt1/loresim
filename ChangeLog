@@ -1,3 +1,9 @@
+loresim (0.0.2-1) unstable; urgency=medium
+
+  * allow fastq input in fastareformat 
+
+ -- German Tischler <gt1@sanger.ac.uk>  Wed, 17 Jun 2015 14:36:21 +0200
+
 loresim (0.0.1-1) unstable; urgency=medium
 
   * add documentation 

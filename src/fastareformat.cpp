@@ -16,38 +16,67 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <libmaus2/fastx/StreamFastAReader.hpp>
+#include <libmaus2/fastx/StreamFastQReader.hpp>
+#include <libmaus2/aio/PosixFdInputStream.hpp>
+#include <libmaus2/fastx/SpaceTable.hpp>
+
+template<typename reader_type>
+void fastareformat(libmaus2::util::ArgInfo const & arginfo, reader_type & reader)
+{
+	typename reader_type::pattern_type pattern;
+	
+	std::string const prolog = arginfo.getUnparsedValue("prolog","L");
+	uint64_t readid = arginfo.getValueUnsignedNumeric<uint64_t>("readidbase",0);
+	uint64_t const cols = arginfo.getValueUnsignedNumeric<uint64_t>("cols",80);
+	libmaus2::fastx::SpaceTable const ST;
+	
+	while ( reader.getNextPatternUnlocked(pattern) )
+	{
+		std::string const s = pattern.spattern;
+		char const * c = s.c_str();
+				
+		std::cout << '>' << prolog << '/' << (readid++) << '/' << 0 << '_' << s.size() << " RQ=0.851 " << pattern.sid << "\n";
+		uint64_t low = 0;
+		
+		while ( low < s.size() )
+		{
+			uint64_t const high = std::min(low+cols,static_cast<uint64_t>(s.size()));
+			
+			std::cout.write(c+low,high-low);
+			std::cout.put('\n');
+			
+			low = high;
+		}
+	}
+}
 
 int main(int argc, char * argv[])
 {
 	try
 	{
 		libmaus2::util::ArgInfo const arginfo(argc,argv);
-	
-		libmaus2::fastx::StreamFastAReaderWrapper in(std::cin);	
-		libmaus2::fastx::StreamFastAReaderWrapper::pattern_type pattern;
-		
-		uint64_t const runid = arginfo.getValueUnsignedNumeric<uint64_t>("run",0);
-		uint64_t readid = arginfo.getValueUnsignedNumeric<uint64_t>("readidbase",0);
-		uint64_t const cols = arginfo.getValueUnsignedNumeric<uint64_t>("cols",80);
-		
-		while ( in.getNextPatternUnlocked(pattern) )
-		{
-			std::string const s = pattern.spattern;
-			char const * c = s.c_str();
 
-			std::cout << '>' << 'L' << runid << '/' << (readid++) << '/' << 0 << '_' << s.size() << " RQ=0.851\n";
-			uint64_t low = 0;
-			
-			while ( low < s.size() )
-			{
-				uint64_t const high = std::min(low+cols,static_cast<uint64_t>(s.size()));
-				
-				std::cout.write(c+low,high-low);
-				std::cout.put('\n');
-				
-				low = high;
-			}
+		libmaus2::aio::PosixFdInputStream PFIS(STDIN_FILENO,64*1024,1024);
+		
+		int const c = PFIS.peek();
+		
+		if ( c == '>' || c == std::istream::traits_type::eof() )
+		{
+			libmaus2::fastx::StreamFastAReaderWrapper in(PFIS);	
+			fastareformat(arginfo,in);	
 		}
+		else if ( c == '@' )
+		{
+			libmaus2::fastx::StreamFastQReaderWrapper in(PFIS);	
+			fastareformat(arginfo,in);			
+		}
+		else
+		{
+			libmaus2::exception::LibMausException lme;
+			lme.getStream() << "Unknown input file format, first character " << static_cast<char>(c) << std::endl;
+			lme.finish();
+			throw lme;
+		}	
 	}
 	catch(std::exception const & ex)
 	{

@@ -39,7 +39,7 @@ Contained programs
 - delrate: fraction of deletions in introduced base errors
 - insrate: fraction of insertions in introduced base errors
 
-*fastareformat*: reformats FastA so it becomes valid input for the DAZZ_DB tool fasta2DB. This includes changing read names and wrapping long lines.
+*fastareformat*: reformats FastA or FastQ so it becomes valid input for the DAZZ_DB tool fasta2DB. This includes changing read names and wrapping long lines.
 
 *loresim*: generates a sequence of random DNA reads from a given sequence. For this the input sequence is traversed a number of times and split into pieces which are subsequently either
 modified within a certain error range or dropped with a certain rate. The program can switch between a low and high error profile during read generation. Reads are randomly taken from the forward or reverse strand.
